@@ -620,7 +620,15 @@ if active_record?
       end
 
       it 'should detect preload associations' do
-        User.includes(:submission_attachment).each { |user| user.submission_attachment.file_name }
+        User.preload(:submission_attachment).each { |user| user.submission_attachment.file_name }
+        Bullet::Detector::UnusedEagerLoading.check_unused_preload_associations
+        expect(Bullet::Detector::Association).not_to be_has_unused_preload_associations
+
+        expect(Bullet::Detector::Association).to be_completely_preloading_associations
+      end
+
+      it 'should detect eager load associations' do
+        User.eager_load(:submission_attachment).each { |user| user.submission_attachment.file_name }
         Bullet::Detector::UnusedEagerLoading.check_unused_preload_associations
         expect(Bullet::Detector::Association).not_to be_has_unused_preload_associations
 
